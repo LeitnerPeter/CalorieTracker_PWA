@@ -40,14 +40,28 @@ foods.forEach((food, index) => {
 renderEntries();
 
 // ===== Portion buttons =====
-document.querySelectorAll(".portion-buttons button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".portion-buttons button")
-      .forEach(b => b.classList.remove("active"));
+document.getElementById("addEntryBtn").addEventListener("click", () => {
 
-    btn.classList.add("active");
-    selectedMultiplier = Number(btn.dataset.multiplier);
+  const selectedIndex = parseInt(foodSelect.value);
+  const food = foods[selectedIndex];
+
+  if (!food) return;
+
+  const grams = food.defaultPortion * selectedMultiplier;
+  const calories = Math.round((food.kcalPer100g / 100) * grams);
+
+  if (!entriesByDate[selectedDate]) {
+    entriesByDate[selectedDate] = [];
+  }
+
+  entriesByDate[selectedDate].push({
+    name: food.name,
+    calories: calories
   });
+
+  localStorage.setItem("entriesByDate", JSON.stringify(entriesByDate));
+
+  renderEntries();
 });
 
 // ===== Add entry =====
