@@ -8,7 +8,15 @@ const foods = [
   { name: "Cocktail", kcalPer100g: 150, defaultPortion: 250 }
 ];
 
+// ===== DOM Elements =====
+const foodSelect = document.getElementById("foodSelect");
+const entriesList = document.getElementById("entriesList");
+const totalCaloriesEl = document.getElementById("totalCalories");
 const currentDateEl = document.getElementById("currentDate");
+
+let entries = JSON.parse(localStorage.getItem("entries")) || [];
+let selectedMultiplier = 1;
+let selectedDate = getToday();
 
 currentDateEl.textContent = formatDate(selectedDate);
 
@@ -20,14 +28,9 @@ document.getElementById("nextDay").addEventListener("click", () => {
   changeDate(1);
 });
 
-let entries = JSON.parse(localStorage.getItem("entries")) || [];
-let selectedMultiplier = 1;
-let selectedDate = getToday();
 
-// ===== DOM Elements =====
-const foodSelect = document.getElementById("foodSelect");
-const entriesList = document.getElementById("entriesList");
-const totalCaloriesEl = document.getElementById("totalCalories");
+
+
 
 // ===== Init =====
 foods.forEach((food, index) => {
@@ -56,9 +59,15 @@ document.getElementById("addEntryBtn").addEventListener("click", () => {
   const grams = food.defaultPortion * selectedMultiplier;
   const calories = Math.round((food.kcalPer100g / 100) * grams);
 
-  entries.push({
+  // Falls Datum noch nicht existiert → anlegen
+  if (!entriesByDate[selectedDate]) {
+    entriesByDate[selectedDate] = [];
+  }
+
+  // Eintrag hinzufügen
+  entriesByDate[selectedDate].push({
     name: food.name,
-    calories
+    calories: calories
   });
 
   saveAndRender();
@@ -67,7 +76,12 @@ document.getElementById("addEntryBtn").addEventListener("click", () => {
 // ===== Render =====
 function renderEntries() {
   entriesList.innerHTML = "";
+
+  currentDateEl.textContent = formatDate(selectedDate);
+
   let total = 0;
+
+  const entries = entriesByDate[selectedDate] || [];
 
   entries.forEach((entry, index) => {
     total += entry.calories;
@@ -80,18 +94,22 @@ function renderEntries() {
     entriesList.appendChild(li);
   });
 
-  totalCaloriesEl.textContent = `${total} kcal`;
+  totalCaloriesEl.textContent = total + " kcal";
 }
 
 function removeEntry(index) {
-  entries.splice(index, 1);
+  entriesByDate[selectedDate].splice(index, 1);
   saveAndRender();
 }
 
 function saveAndRender() {
-  localStorage.setItem("entries", JSON.stringify(entries));
+  localStorage.setItem(
+    "entriesByDate",
+    JSON.stringify(entriesByDate)
+  );
   renderEntries();
 }
+
 function getToday() {
   return new Date().toISOString().split("T")[0];
 }
