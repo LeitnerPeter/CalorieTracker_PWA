@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calories Tracker</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+  <header>
+    <h1>Calories Tracker</h1>
+    <div id="totalCalories">0 kcal</div>
+  </header>
+  <div class="date-navigation">
+    <button id="prevDay">◀</button>
+    <div id="currentDate"></div>
+    <button id="nextDay">▶</button>
+  </div>
+
+  <main>
+    <section class="add-entry">
+      <select id="foodSelect"></select>
+
+      <div class="portion-buttons">
+        <button data-multiplier="0.7">Small</button>
+        <button data-multiplier="1" class="active">Normal</button>
+        <button data-multiplier="1.3">Large</button>
+      </div>
+
+      <button id="addEntryBtn">Add</button>
+    </section>
+
+    <section class="entries">
+      <ul id="entriesList"></ul>
+    </section>
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+        });
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
