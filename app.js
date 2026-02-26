@@ -14,7 +14,7 @@ const entriesList = document.getElementById("entriesList");
 const totalCaloriesEl = document.getElementById("totalCalories");
 const currentDateEl = document.getElementById("currentDate");
 
-let entries = JSON.parse(localStorage.getItem("entries")) || [];
+let entriesByDate = JSON.parse(localStorage.getItem("entriesByDate")) || {};
 let selectedMultiplier = 1;
 let selectedDate = getToday();
 
@@ -27,9 +27,6 @@ document.getElementById("prevDay").addEventListener("click", () => {
 document.getElementById("nextDay").addEventListener("click", () => {
   changeDate(1);
 });
-
-
-
 
 
 // ===== Init =====
