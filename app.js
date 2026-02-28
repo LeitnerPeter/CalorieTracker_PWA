@@ -1,3 +1,14 @@
+const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabase.co";
+const supabaseKey = "DEIN_ANON_KEY";
+
+const supabase = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+let pendingEntries =
+  JSON.parse(localStorage.getItem("pendingEntries")) || [];
+
 // ===== Food presets (can be extended anytime) =====
 const foods = [
   { name: "Pizza Margherita", kcalPer100g: 240, defaultPortion: 300 },
@@ -39,69 +50,76 @@ foods.forEach((food, index) => {
 
 renderEntries();
 
-// ===== Portion buttons =====
-document.getElementById("addEntryBtn").addEventListener("click", () => {
+// ===== Add entry =====
+document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
   const selectedIndex = parseInt(foodSelect.value);
-  const food = foods[selectedIndex];
+  const item = foods[selectedIndex];
 
-  if (!food) return;
+  if (!item) return;
 
-  const grams = food.defaultPortion * selectedMultiplier;
-  const calories = Math.round((food.kcalPer100g / 100) * grams);
+  const amount = item.defaultPortion * selectedMultiplier;
 
-  if (!entriesByDate[selectedDate]) {
-    entriesByDate[selectedDate] = [];
+  const newEntry = {
+    date: selectedDate,
+    item_id: item.id,
+    amount: amount
+  };
+
+  if (navigator.onLine) {
+    const { error } = await supabase
+      .from("entries")
+      .insert([newEntry]);
+
+    if (error) {
+      console.log("Online failed, saving offline");
+      saveOffline(newEntry);
+    }
+  } else {
+    saveOffline(newEntry);
   }
-
-  entriesByDate[selectedDate].push({
-    name: food.name,
-    calories: calories
-  });
-
-  localStorage.setItem("entriesByDate", JSON.stringify(entriesByDate));
 
   renderEntries();
 });
 
-// ===== Add entry =====
-document.getElementById("addEntryBtn").addEventListener("click", () => {
-  const food = foods[foodSelect.value];
-  const grams = food.defaultPortion * selectedMultiplier;
-  const calories = Math.round((food.kcalPer100g / 100) * grams);
-
-  // Falls Datum noch nicht existiert → anlegen
-  if (!entriesByDate[selectedDate]) {
-    entriesByDate[selectedDate] = [];
-  }
-
-  // Eintrag hinzufügen
-  entriesByDate[selectedDate].push({
-    name: food.name,
-    calories: calories
-  });
-
-  saveAndRender();
-});
-
 // ===== Render =====
-function renderEntries() {
-  entriesList.innerHTML = "";
+async function renderEntries() {
 
+  entriesList.innerHTML = "";
   currentDateEl.textContent = formatDate(selectedDate);
+
+  const { data, error } = await supabase
+    .from("entries")
+    .select(`
+      id,
+      amount,
+      items (
+        name,
+        kcal_per_100
+      )
+    `)
+    .eq("date", selectedDate);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   let total = 0;
 
-  const entries = entriesByDate[selectedDate] || [];
+  data.forEach(entry => {
 
-  entries.forEach((entry, index) => {
-    total += entry.calories;
+    const calories = Math.round(
+      (entry.items.kcal_per_100 / 100) * entry.amount
+    );
+
+    total += calories;
 
     const li = document.createElement("li");
     li.innerHTML = `
-      <span>${entry.name} – ${entry.calories} kcal</span>
-      <button onclick="removeEntry(${index})">X</button>
+      <span>${entry.items.name} – ${calories} kcal</span>
     `;
+
     entriesList.appendChild(li);
   });
 
@@ -121,6 +139,32 @@ function saveAndRender() {
   renderEntries();
 }
 
+function saveOffline(entry) {
+  pendingEntries.push(entry);
+  localStorage.setItem(
+    "pendingEntries",
+    JSON.stringify(pendingEntries)
+  );
+}
+
+async function syncPendingEntries() {
+
+  if (!navigator.onLine) return;
+  if (pendingEntries.length === 0) return;
+
+  console.log("Syncing pending entries...");
+
+  const { error } = await supabase
+    .from("entries")
+    .insert(pendingEntries);
+
+  if (!error) {
+    pendingEntries = [];
+    localStorage.removeItem("pendingEntries");
+    console.log("Sync successful");
+  }
+}
+
 function getToday() {
   return new Date().toISOString().split("T")[0];
 }
@@ -136,3 +180,7 @@ function changeDate(days) {
   selectedDate = date.toISOString().split("T")[0];
   renderEntries();
 }
+
+console.log("Add listener registered");
+window.addEventListener("load", syncPendingEntries);
+window.addEventListener("online", syncPendingEntries);
