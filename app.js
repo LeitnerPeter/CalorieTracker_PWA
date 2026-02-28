@@ -1,5 +1,5 @@
 const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabase.co";
-const supabaseKey = "DEIN_ANON_KEY";
+const supabaseKey = "sb_publishable_ZzFGVRc3XUU7QnFR364VQg_UwAmO1Zm";
 
 const supabase = window.supabase.createClient(
   supabaseUrl,
@@ -206,5 +206,6 @@ function changeDate(days) {
   renderEntries();
 }
 
+console.log("Add listener registered");
 window.addEventListener("load", syncPendingEntries);
 window.addEventListener("online", syncPendingEntries);
