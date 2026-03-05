@@ -1,4 +1,3 @@
-console.log("App start");
 const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabase.co";
 const supabaseKey = "sb_publishable_ZzFGVRc3XUU7QnFR364VQg_UwAmO1Zm";
 
@@ -6,6 +5,8 @@ const supabase = window.supabase.createClient(
   supabaseUrl,
   supabaseKey
 );
+
+console.log("Supabase initialized");
 
 let pendingEntries =
   JSON.parse(localStorage.getItem("pendingEntries")) || [];
