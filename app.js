@@ -21,6 +21,26 @@ const foods = [
   { name: "Cocktail", kcalPer100g: 150, defaultPortion: 250 }
 ];
 
+document
+  .querySelectorAll(".portion-buttons button")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      document
+        .querySelectorAll(".portion-buttons button")
+        .forEach(b => b.classList.remove("active"));
+
+      button.classList.add("active");
+
+      selectedMultiplier = parseFloat(
+        button.dataset.multiplier
+      );
+
+    });
+
+});
+
 // ===== DOM Elements =====
 const foodSelect = document.getElementById("foodSelect");
 const entriesList = document.getElementById("entriesList");
@@ -52,31 +72,6 @@ foods.forEach((food, index) => {
 
 renderEntries();
 
-// ===== Portion buttons =====
-document.getElementById("addEntryBtn").addEventListener("click", () => {
-
-  const selectedIndex = parseInt(foodSelect.value);
-  const food = foods[selectedIndex];
-
-  if (!food) return;
-
-  const grams = food.defaultPortion * selectedMultiplier;
-  const calories = Math.round((food.kcalPer100g / 100) * grams);
-
-  if (!entriesByDate[selectedDate]) {
-    entriesByDate[selectedDate] = [];
-  }
-
-  entriesByDate[selectedDate].push({
-    name: food.name,
-    calories: calories
-  });
-
-  localStorage.setItem("entriesByDate", JSON.stringify(entriesByDate));
-
-  renderEntries();
-});
-
 // ===== Add entry =====
 document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
@@ -89,7 +84,7 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
   const newEntry = {
     date: selectedDate,
-    item_id: item.id,
+    item_id: selectedIndex + 1,
     amount: amount
   };
 
