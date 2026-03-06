@@ -12,14 +12,7 @@ let pendingEntries =
   JSON.parse(localStorage.getItem("pendingEntries")) || [];
 
 // ===== Food presets (can be extended anytime) =====
-const foods = [
-  { name: "Pizza Margherita", kcalPer100g: 240, defaultPortion: 300 },
-  { name: "Pasta Bolognese", kcalPer100g: 160, defaultPortion: 350 },
-  { name: "Burger", kcalPer100g: 260, defaultPortion: 280 },
-  { name: "Hotel Buffet Plate", kcalPer100g: 180, defaultPortion: 500 },
-  { name: "Salad with Dressing", kcalPer100g: 120, defaultPortion: 250 },
-  { name: "Cocktail", kcalPer100g: 150, defaultPortion: 250 }
-];
+let foods = [];
 
 document
   .querySelectorAll(".portion-buttons button")
@@ -63,12 +56,7 @@ document.getElementById("nextDay").addEventListener("click", () => {
 
 
 // ===== Init =====
-foods.forEach((food, index) => {
-  const option = document.createElement("option");
-  option.value = index;
-  option.textContent = food.name;
-  foodSelect.appendChild(option);
-});
+
 
 renderEntries();
 
@@ -203,6 +191,45 @@ function changeDate(days) {
   renderEntries();
 }
 
+async function loadFoods() {
+
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .order("name");
+
+  if (error) {
+    console.error("Error loading foods", error);
+    return;
+  }
+
+  foods = data;
+
+  foodSelect.innerHTML = "";
+
+  foods.forEach((food, index) => {
+
+    const option = document.createElement("option");
+
+    option.value = index;
+    option.textContent = food.name;
+
+    foodSelect.appendChild(option);
+
+  });
+
+}
+
 console.log("Add listener registered");
 window.addEventListener("load", syncPendingEntries);
 window.addEventListener("online", syncPendingEntries);
+
+window.addEventListener("load", async () => {
+
+  await loadFoods();
+
+  syncPendingEntries();
+
+  renderEntries();
+
+});
