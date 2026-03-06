@@ -1,7 +1,7 @@
-const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabase.co";
+const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabaseClient.co";
 const supabaseKey = "sb_publishable_ZzFGVRc3XUU7QnFR364VQg_UwAmO1Zm";
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabaseClient.createClient(
   supabaseUrl,
   supabaseKey
 );
@@ -89,7 +89,7 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
   };
 
   if (navigator.onLine) {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from("entries")
       .insert([newEntry]);
 
@@ -110,7 +110,7 @@ async function renderEntries() {
   entriesList.innerHTML = "";
   currentDateEl.textContent = formatDate(selectedDate);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("entries")
     .select(`
       id,
@@ -176,7 +176,7 @@ async function syncPendingEntries() {
 
   console.log("Syncing pending entries...");
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("entries")
     .insert(pendingEntries);
 
