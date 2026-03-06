@@ -193,7 +193,7 @@ function changeDate(days) {
 
 async function loadFoods() {
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("items")
     .select("*")
     .order("name");
