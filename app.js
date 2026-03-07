@@ -63,30 +63,32 @@ renderEntries();
 // ===== Add entry =====
 document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
-  const selectedIndex = parseInt(foodSelect.value);
-  const item = foods[selectedIndex];
+  const itemId = foodSelect.value;
+
+  const item = foods.find(f => f.id === itemId);
 
   if (!item) return;
 
-  const amount = item.defaultPortion * selectedMultiplier;
-
-  console.log("Item:", item);
+  const amount = item.default_portion * selectedMultiplier;
 
   const newEntry = {
     date: selectedDate,
-    item_id: selectedIndex + 1,
+    item_id: itemId,
     amount: amount
   };
 
   console.log("New Entry:", newEntry);
 
-  const { error } = await supabaseClient
+  const { error } = await supabase
     .from("entries")
     .insert([newEntry]);
 
   if (error) {
     console.error("Insert error:", error);
+  } else {
+    renderEntries();
   }
+
 });
 
 // ===== Render =====
@@ -209,7 +211,7 @@ async function loadFoods() {
 
     const option = document.createElement("option");
 
-    option.value = index;
+    option.value = food.id;
     option.textContent = food.name;
 
     select.appendChild(option);
