@@ -56,8 +56,8 @@ document.getElementById("nextDay").addEventListener("click", () => {
 
 
 // ===== Init =====
-
-
+console.log("Foods:", foods);
+loadFoods();
 renderEntries();
 
 // ===== Add entry =====
@@ -70,6 +70,8 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
   const amount = item.defaultPortion * selectedMultiplier;
 
+  console.log("Item:", item);
+
   const newEntry = {
     date: selectedDate,
     item_id: selectedIndex + 1,
@@ -78,20 +80,13 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
   console.log("New Entry:", newEntry);
 
-  if (navigator.onLine) {
-    const { error } = await supabaseClient
-      .from("entries")
-      .insert([newEntry]);
+  const { error } = await supabaseClient
+    .from("entries")
+    .insert([newEntry]);
 
-    if (error) {
-      console.log("Online failed, saving offline");
-      saveOffline(newEntry);
-    }
-  } else {
-    saveOffline(newEntry);
+  if (error) {
+    console.error("Insert error:", error);
   }
-
-  renderEntries();
 });
 
 // ===== Render =====
@@ -207,7 +202,8 @@ async function loadFoods() {
 
   foods = data;
 
-  foodSelect.innerHTML = "";
+  const select = document.getElementById("foodSelect");
+  select.innerHTML = "";
 
   foods.forEach((food, index) => {
 
@@ -216,7 +212,7 @@ async function loadFoods() {
     option.value = index;
     option.textContent = food.name;
 
-    foodSelect.appendChild(option);
+    select.appendChild(option);
 
   });
 
