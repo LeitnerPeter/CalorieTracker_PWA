@@ -42,6 +42,8 @@ const currentDateEl = document.getElementById("currentDate");
 const foodSearch = document.getElementById("foodSearch");
 const foodResults = document.getElementById("foodResults");
 const favoritesList = document.getElementById("favoritesList");
+const connectionStatus = document.getElementById("connectionStatus");
+const mainElement = document.querySelector("main");
 
 console.log("foodSearch element:", foodSearch);
 console.log("foodResults element:", foodResults);
@@ -130,6 +132,18 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
     renderEntries();
   }
 
+});
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+mainElement.addEventListener("touchstart", (event) => {
+  touchStartX = event.changedTouches[0].screenX;
+});
+
+mainElement.addEventListener("touchend", (event) => {
+  touchEndX = event.changedTouches[0].screenX;
+  handleSwipe();
 });
 
 // ===== Render =====
@@ -299,6 +313,46 @@ async function loadFoods() {
 
 }
 
+function updateConnectionStatus() {
+
+  if (navigator.onLine) {
+
+    connectionStatus.textContent = "🟢 Online";
+    connectionStatus.classList.remove("offline");
+    connectionStatus.classList.add("online");
+
+  } else {
+
+    connectionStatus.textContent = "🔴 Offline";
+    connectionStatus.classList.remove("online");
+    connectionStatus.classList.add("offline");
+
+  }
+
+}
+
+function handleSwipe() {
+
+  const swipeDistance = touchEndX - touchStartX;
+
+  const threshold = 50; // minimale Swipe Distanz
+
+  if (swipeDistance > threshold) {
+
+    // Swipe nach rechts → gestern
+    changeDate(-1);
+
+  }
+
+  if (swipeDistance < -threshold) {
+
+    // Swipe nach links → morgen
+    changeDate(1);
+
+  }
+
+}
+
 console.log("Add listener registered");
 window.addEventListener("load", syncPendingEntries);
 window.addEventListener("online", syncPendingEntries);
@@ -314,3 +368,12 @@ window.addEventListener("load", async () => {
   renderEntries();
 
 });
+
+window.addEventListener("online", () => {
+
+  updateConnectionStatus();
+  syncPendingEntries();
+
+});
+window.addEventListener("offline", updateConnectionStatus);
+window.addEventListener("load", updateConnectionStatus);

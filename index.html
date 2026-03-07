@@ -7,7 +7,6 @@
   <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <base href="/CalorieTracker_PWA/">
 
 </head>
 <body>
@@ -16,6 +15,9 @@
     <h1>Calories Tracker</h1>
     <div id="totalCalories">0 kcal</div>
   </header>
+  <div id="connectionStatus" class="online">
+    🟢 Online
+  </div>
   <div class="date-navigation">
     <button id="prevDay">◀</button>
     <div id="currentDate"></div>
@@ -44,14 +46,16 @@
     </section>
   </main>
 
-  <!--
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
-}
-</script>
--->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log("Service Worker registered"))
+          .catch(err => console.log("Service Worker failed", err));
+      });
+    }
+  </script>
 </body>
 </html>
