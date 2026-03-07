@@ -41,6 +41,7 @@ const totalCaloriesEl = document.getElementById("totalCalories");
 const currentDateEl = document.getElementById("currentDate");
 const foodSearch = document.getElementById("foodSearch");
 const foodResults = document.getElementById("foodResults");
+const favoritesList = document.getElementById("favoritesList");
 
 console.log("foodSearch element:", foodSearch);
 console.log("foodResults element:", foodResults);
@@ -230,6 +231,56 @@ function changeDate(days) {
   renderEntries();
 }
 
+function renderFavorites() {
+
+  favoritesList.innerHTML = "";
+
+  const favorites = foods.filter(food => food.is_favorite);
+
+  favorites.forEach(food => {
+
+    const btn = document.createElement("button");
+
+    btn.textContent = food.name;
+
+    btn.addEventListener("click", () => {
+
+      selectedFood = food;
+
+      addEntryFromFavorite(food);
+
+    });
+
+    favoritesList.appendChild(btn);
+
+  });
+
+}
+
+async function addEntryFromFavorite(food) {
+
+  const amount =
+    food.default_portion * selectedMultiplier;
+
+  const newEntry = {
+    date: selectedDate,
+    item_id: food.id,
+    amount: amount
+  };
+
+  const { error } = await supabaseClient
+    .from("entries")
+    .insert([newEntry]);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  renderEntries();
+
+}
+
 async function loadFoods() {
 
   const { data, error } = await supabaseClient
@@ -255,6 +306,8 @@ window.addEventListener("online", syncPendingEntries);
 window.addEventListener("load", async () => {
 
   await loadFoods();
+
+  renderFavorites();
 
   syncPendingEntries();
 
