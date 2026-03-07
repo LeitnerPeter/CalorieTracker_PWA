@@ -77,9 +77,9 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
     amount: amount
   };
 
-  console.log("New Entry:", newEntry);
+  console.log("Entry being sent:", newEntry);
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("entries")
     .insert([newEntry]);
 
