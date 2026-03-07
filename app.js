@@ -39,6 +39,8 @@ const foodSelect = document.getElementById("foodSelect");
 const entriesList = document.getElementById("entriesList");
 const totalCaloriesEl = document.getElementById("totalCalories");
 const currentDateEl = document.getElementById("currentDate");
+const foodSearch = document.getElementById("foodSearch");
+const foodResults = document.getElementById("foodResults");
 
 let entriesByDate = JSON.parse(localStorage.getItem("entriesByDate")) || {};
 let selectedMultiplier = 1;
@@ -60,23 +62,62 @@ console.log("Foods:", foods);
 loadFoods();
 renderEntries();
 
+let selectedFood = null;
+
+foodSearch.addEventListener("input", () => {
+
+  const query = foodSearch.value.toLowerCase();
+
+  foodResults.innerHTML = "";
+
+  if (query.length < 1) return;
+
+  const filtered = foods.filter(food =>
+    food.name.toLowerCase().includes(query)
+  );
+
+  filtered.slice(0, 10).forEach(food => {
+
+    const li = document.createElement("li");
+    li.textContent = food.name;
+
+    li.addEventListener("click", () => {
+
+      selectedFood = food;
+
+      foodSearch.value = food.name;
+      foodResults.innerHTML = "";
+
+    });
+
+    foodResults.appendChild(li);
+
+  });
+
+});
+
 // ===== Add entry =====
 document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
-  const itemId = foodSelect.value;
+  if (!selectedFood) {
+    alert("Select a food first");
+    return;
+  }
+
+  const itemId = selectedFood.id;
 
   const item = foods.find(f => f.id === itemId);
 
   if (!item) return;
 
-  const amount = item.default_portion * selectedMultiplier;
+  const amount = selectedFood.default_portion * selectedMultiplier;
 
   const newEntry = {
     date: selectedDate,
     item_id: itemId,
     amount: amount
   };
-  
+
   console.log("Item:", item);
   console.log("Multiplier:", selectedMultiplier);
   console.log("Amount:", amount);

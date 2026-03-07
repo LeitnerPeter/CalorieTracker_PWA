@@ -94,3 +94,21 @@ select, button {
 #currentDate {
   font-weight: bold;
 }
+
+#foodResults {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+#foodResults li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+#foodResults li:hover {
+  background: #f2f2f2;
+}
