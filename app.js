@@ -6,6 +6,10 @@ const supabaseClient = window.supabase.createClient(
   supabaseKey
 );
 
+document.addEventListener("DOMContentLoaded", () => {
+  initApp();
+});
+
 console.log("Supabase initialized");
 
 let pendingEntries =
@@ -42,6 +46,9 @@ const currentDateEl = document.getElementById("currentDate");
 const foodSearch = document.getElementById("foodSearch");
 const foodResults = document.getElementById("foodResults");
 
+console.log("foodSearch element:", foodSearch);
+console.log("foodResults element:", foodResults);
+
 let entriesByDate = JSON.parse(localStorage.getItem("entriesByDate")) || {};
 let selectedMultiplier = 1;
 let selectedDate = getToday();
@@ -58,9 +65,13 @@ document.getElementById("nextDay").addEventListener("click", () => {
 
 
 // ===== Init =====
-console.log("Foods:", foods);
-loadFoods();
-renderEntries();
+function initApp() {
+
+  loadFoods();
+  renderEntries();
+  syncPendingEntries();
+
+}
 
 let selectedFood = null;
 
@@ -234,6 +245,9 @@ function changeDate(days) {
 }
 
 async function loadFoods() {
+
+  console.log("Loading foods...");
+  console.log("foodResults:", foodResults);
 
   const { data, error } = await supabaseClient
     .from("items")
