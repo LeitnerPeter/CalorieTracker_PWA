@@ -76,6 +76,8 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
     amount: amount
   };
 
+  console.log("New Entry:", newEntry);
+
   if (navigator.onLine) {
     const { error } = await supabaseClient
       .from("entries")
