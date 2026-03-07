@@ -76,8 +76,10 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
     item_id: itemId,
     amount: amount
   };
-
-  console.log("Entry being sent:", newEntry);
+  
+  console.log("Item:", item);
+  console.log("Multiplier:", selectedMultiplier);
+  console.log("Amount:", amount);
 
   const { error } = await supabaseClient
     .from("entries")
