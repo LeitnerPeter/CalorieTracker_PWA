@@ -6,10 +6,6 @@ const supabaseClient = window.supabase.createClient(
   supabaseKey
 );
 
-document.addEventListener("DOMContentLoaded", () => {
-  initApp();
-});
-
 console.log("Supabase initialized");
 
 let pendingEntries =
@@ -62,16 +58,6 @@ document.getElementById("prevDay").addEventListener("click", () => {
 document.getElementById("nextDay").addEventListener("click", () => {
   changeDate(1);
 });
-
-
-// ===== Init =====
-function initApp() {
-
-  loadFoods();
-  renderEntries();
-  syncPendingEntries();
-
-}
 
 let selectedFood = null;
 
@@ -246,9 +232,6 @@ function changeDate(days) {
 
 async function loadFoods() {
 
-  console.log("Loading foods...");
-  console.log("foodResults:", foodResults);
-
   const { data, error } = await supabaseClient
     .from("items")
     .select("*")
@@ -261,19 +244,7 @@ async function loadFoods() {
 
   foods = data;
 
-  const select = document.getElementById("foodSelect");
-  select.innerHTML = "";
-
-  foods.forEach((food, index) => {
-
-    const option = document.createElement("option");
-
-    option.value = food.id;
-    option.textContent = food.name;
-
-    select.appendChild(option);
-
-  });
+  console.log("Foods loaded:", foods.length);
 
 }
 
