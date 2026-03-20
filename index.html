@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Calories" />
+  <link rel="apple-touch-icon" href="icon/icon-192.png" />
   <title>Calorie Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
   <link rel="manifest" href="manifest.json">
@@ -23,6 +27,10 @@
     <div id="currentDate"></div>
     <button id="nextDay">▶</button>
   </div>
+  <div id="undoBar" hidden>
+    Entry added
+    <button id="undoBtn">Undo</button>
+  </div>
 
   <main>
     <section class="add-entry">
@@ -40,13 +48,28 @@
 
       <button id="addEntryBtn">Add</button>
     </section>
+    <button onclick="startScanner()">📷 Scan Barcode</button>
+    <video id="scanner" style="width:100%; display:none;"></video>
 
     <section class="entries">
       <ul id="entriesList"></ul>
     </section>
+
+    <div id="calorie-status">0 / 2000 kcal</div>
+    <input
+      type="number"
+      placeholder="Kalorienziel"
+      onchange="setCalorieGoal(this.value)"
+    />
+
+    <section class="chart">
+      <canvas id="weeklyChart"></canvas>
+    </section>
+
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

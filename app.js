@@ -51,6 +51,9 @@ console.log("foodResults element:", foodResults);
 let entriesByDate = JSON.parse(localStorage.getItem("entriesByDate")) || {};
 let selectedMultiplier = 1;
 let selectedDate = getToday();
+let weeklyChart = null;
+let lastEntryId = null;
+let searchTimeout = null;
 
 currentDateEl.textContent = formatDate(selectedDate);
 
@@ -134,6 +137,26 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
 
 });
 
+// Undo Button
+document.getElementById("undoBtn").addEventListener("click", async () => {
+
+  if (!lastEntryId) return;
+
+  await supabaseClient
+    .from("entries")
+    .delete()
+    .eq("id", lastEntryId);
+
+  lastEntryId = null;
+
+  setTimeout(() => {
+    document.getElementById("undoBar").hidden = true;
+  }, 5000);
+
+  renderEntries();
+
+});
+
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -188,6 +211,8 @@ async function renderEntries() {
   });
 
   totalCaloriesEl.textContent = total + " kcal";
+
+  renderWeeklyChart();
 }
 
 function removeEntry(index) {
@@ -201,6 +226,18 @@ function saveAndRender() {
     JSON.stringify(entriesByDate)
   );
   renderEntries();
+}
+
+function saveRecentFood(food) {
+
+  let recent = JSON.parse(localStorage.getItem("recentFoods")) || [];
+
+  recent = recent.filter(f => f.id !== food.id);
+
+  recent.unshift(food);
+
+  localStorage.setItem("recentFoods", JSON.stringify(recent));
+
 }
 
 function saveOffline(entry) {
@@ -273,23 +310,25 @@ function renderFavorites() {
 
 async function addEntryFromFavorite(food) {
 
-  const amount =
-    food.default_portion * selectedMultiplier;
+  const amount = food.default_portion * selectedMultiplier;
 
-  const newEntry = {
-    date: selectedDate,
-    item_id: food.id,
-    amount: amount
-  };
-
-  const { error } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("entries")
-    .insert([newEntry]);
+    .insert([{
+      date: selectedDate,
+      item_id: food.id,
+      amount: amount
+    }])
+    .select();
 
   if (error) {
     console.error(error);
     return;
   }
+
+  lastEntryId = data[0].id;
+
+  document.getElementById("undoBar").hidden = false;
 
   renderEntries();
 
@@ -331,27 +370,211 @@ function updateConnectionStatus() {
 
 }
 
+function renderRecentFoods() {
+
+  const container = document.getElementById("recentFoods");
+
+  const recent = JSON.parse(localStorage.getItem("recentFoods")) || [];
+
+  container.innerHTML = "";
+
+  recent.slice(0,5).forEach(food => {
+
+    const btn = document.createElement("button");
+    btn.textContent = food.name;
+
+    btn.onclick = () => addEntryFromFavorite(food);
+
+    container.appendChild(btn);
+
+  });
+
+}
+
 function handleSwipe() {
 
   const swipeDistance = touchEndX - touchStartX;
-
-  const threshold = 50; // minimale Swipe Distanz
+  const threshold = 50;
 
   if (swipeDistance > threshold) {
 
-    // Swipe nach rechts → gestern
-    changeDate(-1);
+    // swipe right → gestern
+    mainElement.classList.add("swipe-right");
+
+    setTimeout(() => {
+      changeDate(-1);
+      mainElement.classList.remove("swipe-right");
+    }, 150);
 
   }
 
   if (swipeDistance < -threshold) {
 
-    // Swipe nach links → morgen
-    changeDate(1);
+    // swipe left → morgen
+    mainElement.classList.add("swipe-left");
 
+    setTimeout(() => {
+      changeDate(1);
+      mainElement.classList.remove("swipe-left");
+    }, 150);
+  }
+}
+
+async function renderWeeklyChart(labels, calories) {
+
+  const data = await getWeeklyCalories();
+  renderChart(data);
+
+  if (weeklyChart) {
+    weeklyChart.destroy();
   }
 
+  weeklyChart = new Chart(
+    document.getElementById("weeklyChart"),
+    {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Calories",
+          data: calories
+        }]
+      }
+    }
+  );
 }
+
+function handleSearchInput(value) {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    performFoodSearch(value);
+  }, 300);
+}
+
+function performFoodSearch(query) {
+  const results = foods.filter(f =>
+    f.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  renderFoodResults(results);
+}
+
+async function getWeeklyCalories() {
+
+  const cache = localStorage.getItem("weeklyCaloriesCache");
+
+  if (cache) {
+    const parsed = JSON.parse(cache);
+
+    if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+      return parsed.data;
+    }
+  }
+
+  const { data } = await supabase
+    .from("meals")
+    .select("calories, date")
+    .gte("date", getLastWeekDate());
+
+  localStorage.setItem("weeklyCaloriesCache", JSON.stringify({
+    timestamp: Date.now(),
+    data: data
+  }));
+
+  return data;
+}
+
+async function startScanner() {
+  const video = document.getElementById("scanner");
+  video.style.display = "block";
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment" }
+  });
+
+  video.srcObject = stream;
+  video.setAttribute("playsinline", true);
+  video.play();
+
+  scanBarcode(video);
+}
+
+async function scanBarcode(video) {
+  const barcodeDetector = new BarcodeDetector({
+    formats: ["ean_13", "ean_8"]
+  });
+
+  const interval = setInterval(async () => {
+    const barcodes = await barcodeDetector.detect(video);
+
+    if (barcodes.length > 0) {
+      clearInterval(interval);
+
+      const code = barcodes[0].rawValue;
+      fetchFoodFromBarcode(code);
+
+      video.srcObject.getTracks().forEach(track => track.stop());
+      video.style.display = "none";
+    }
+  }, 500);
+}
+
+async function fetchFoodFromBarcode(barcode) {
+  const res = await fetch(
+    `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
+  );
+
+  const json = await res.json();
+
+  if (json.status === 1) {
+    const product = json.product;
+
+    const food = {
+      name: product.product_name || "Unknown",
+      calories: product.nutriments["energy-kcal_100g"] || 0
+    };
+
+    addFood(food);
+  } else {
+    alert("Produkt nicht gefunden 😕");
+  }
+}
+
+function setCalorieGoal(value) {
+  localStorage.setItem("calorieGoal", value);
+}
+
+function getCalorieGoal() {
+  return Number(localStorage.getItem("calorieGoal")) || 2000;
+}
+
+function getTodayCalories(meals) {
+  const today = new Date().toISOString().split("T")[0];
+
+  return meals
+    .filter(m => m.date === today)
+    .reduce((sum, m) => sum + m.calories, 0);
+}
+
+function renderCalorieStatus(meals) {
+  const goal = getCalorieGoal();
+  const consumed = getTodayCalories(meals);
+
+  if (consumed > goal) {
+    status.style.color = "red";
+  }
+
+  document.getElementById("calorie-status").innerText =
+    `${consumed} / ${goal} kcal`;
+}
+
+function showInstallHint() {
+  if (window.navigator.standalone) return;
+
+  alert("👉 Tippe auf 'Teilen' und dann 'Zum Home-Bildschirm'");
+}
+
 
 console.log("Add listener registered");
 window.addEventListener("load", syncPendingEntries);
