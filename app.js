@@ -469,7 +469,7 @@ async function getWeeklyCalories() {
   const { data } = await supabaseClient
     .from("meals")
     .select("calories, date")
-    .gte("date", getLastWeekDate());
+    .get("date", getLastWeekDate());
 
   localStorage.setItem("weeklyCaloriesCache", JSON.stringify({
     timestamp: Date.now(),
