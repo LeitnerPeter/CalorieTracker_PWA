@@ -512,7 +512,7 @@ async function getWeeklyCalories() {
   }
 
   const { data, error } = await supabaseClient
-  .from("meals")
+  .from("items")
   .select("calories, date")
   .gte("date", getLastWeekDate());
 
