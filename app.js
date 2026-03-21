@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js';
+
 const supabaseUrl = "https://xyakkemkejxnpdzopmbb.supabase.co";
 const supabaseKey = "sb_publishable_ZzFGVRc3XUU7QnFR364VQg_UwAmO1Zm";
 
@@ -7,6 +9,7 @@ const supabaseClient = window.supabase.createClient(
 );
 
 console.log("Supabase initialized");
+console.log("Supabase:", supabase);
 
 let pendingEntries =
   JSON.parse(localStorage.getItem("pendingEntries")) || [];
@@ -44,9 +47,6 @@ const foodResults = document.getElementById("foodResults");
 const favoritesList = document.getElementById("favoritesList");
 const connectionStatus = document.getElementById("connectionStatus");
 const mainElement = document.querySelector("main");
-
-console.log("foodSearch element:", foodSearch);
-console.log("foodResults element:", foodResults);
 
 let entriesByDate = JSON.parse(localStorage.getItem("entriesByDate")) || {};
 let selectedMultiplier = 1;
@@ -120,10 +120,6 @@ document.getElementById("addEntryBtn").addEventListener("click", async () => {
     item_id: itemId,
     amount: amount
   };
-
-  console.log("Item:", item);
-  console.log("Multiplier:", selectedMultiplier);
-  console.log("Amount:", amount);
 
   const { error } = await supabaseClient
     .from("entries")
