@@ -438,6 +438,49 @@ async function renderWeeklyChart(labels, calories) {
   );
 }
 
+let chartInstance = null;
+
+function renderChart(data) {
+  const ctx = document.getElementById("weeklyChart");
+
+  // Daten gruppieren nach Datum
+  const grouped = {};
+
+  data.forEach(entry => {
+    if (!grouped[entry.date]) {
+      grouped[entry.date] = 0;
+    }
+    grouped[entry.date] += entry.calories;
+  });
+
+  const labels = Object.keys(grouped).sort();
+  const values = labels.map(date => grouped[date]);
+
+  // Alten Chart zerstören (wichtig!)
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Kalorien",
+        data: values
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
 function handleSearchInput(value) {
   clearTimeout(searchTimeout);
 
