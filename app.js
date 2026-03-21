@@ -454,6 +454,14 @@ function performFoodSearch(query) {
   renderFoodResults(results);
 }
 
+function getLastWeekDate() {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  now.setDate(now.getDate() - 7);
+
+  return now.toISOString().split("T")[0];
+}
+
 async function getWeeklyCalories() {
 
   const cache = localStorage.getItem("weeklyCaloriesCache");
@@ -469,7 +477,7 @@ async function getWeeklyCalories() {
   const { data } = await supabaseClient
     .from("meals")
     .select("calories, date")
-    .get("date", getLastWeekDate());
+    .gte("date", getLastWeekDate());
 
   localStorage.setItem("weeklyCaloriesCache", JSON.stringify({
     timestamp: Date.now(),
