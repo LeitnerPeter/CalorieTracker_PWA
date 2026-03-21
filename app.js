@@ -441,9 +441,13 @@ async function renderWeeklyChart(labels, calories) {
 let chartInstance = null;
 
 function renderChart(data) {
+  if (!data || data.length === 0) {
+    console.log("Keine Daten für Chart");
+    return;
+  }
+
   const ctx = document.getElementById("weeklyChart");
 
-  // Daten gruppieren nach Datum
   const grouped = {};
 
   data.forEach(entry => {
@@ -456,7 +460,6 @@ function renderChart(data) {
   const labels = Object.keys(grouped).sort();
   const values = labels.map(date => grouped[date]);
 
-  // Alten Chart zerstören (wichtig!)
   if (chartInstance) {
     chartInstance.destroy();
   }
@@ -464,19 +467,10 @@ function renderChart(data) {
   chartInstance = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: labels,
+      labels,
       datasets: [{
-        label: "Kalorien",
         data: values
       }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false
-        }
-      }
     }
   });
 }
@@ -517,17 +511,17 @@ async function getWeeklyCalories() {
     }
   }
 
-  const { data } = await supabaseClient
-    .from("meals")
-    .select("calories, date")
-    .gte("date", getLastWeekDate());
+  const { data, error } = await supabaseClient
+  .from("meals")
+  .select("calories, date")
+  .gte("date", getLastWeekDate());
 
-  localStorage.setItem("weeklyCaloriesCache", JSON.stringify({
-    timestamp: Date.now(),
-    data: data
-  }));
+  if (error) {
+    console.error("Supabase error:", error);
+    return [];
+  }
 
-  return data;
+  return data || [];
 }
 
 async function startScanner() {
