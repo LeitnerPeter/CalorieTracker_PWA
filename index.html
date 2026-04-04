@@ -10,7 +10,7 @@
   <title>Calorie Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/css/style.css">
 
 </head>
 <body>
@@ -48,8 +48,17 @@
 
       <button id="addEntryBtn">Add</button>
     </section>
-    <button onclick="startScanner()">📷 Scan Barcode</button>
+
+    <button id="addMealBtn">+ Mahlzeit hinzufügen</button>
+
+
+    <button onclick="startFoodScanner()">📷 Barcode scannen</button>
     <video id="scanner" style="width:100%; display:none;"></video>
+
+    <div id="scanner-container" style="display:none">
+      <video id="scanner-video" style="width:100%"></video>
+      <button onclick="stopScanner()">Abbrechen</button>
+    </div>
 
     <section class="entries">
       <ul id="entriesList"></ul>
@@ -70,7 +79,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+  <script type="module" src="/js/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

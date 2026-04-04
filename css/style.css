@@ -145,3 +145,28 @@ body {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+.dashboard {
+  text-align: center;
+  padding: 20px;
+}
+
+.progress-wrapper {
+  position: relative;
+  width: 200px;
+  margin: 20px auto;
+}
+
+.progress-text {
+  position: absolute;
+  top: 55px;
+  left: 0;
+  right: 0;
+}
+
+.meal-entry {
+  background: #f5f5f5;
+  margin: 8px;
+  padding: 10px;
+  border-radius: 10px;
+}

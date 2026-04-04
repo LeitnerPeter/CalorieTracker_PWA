@@ -3,7 +3,7 @@ const CACHE_NAME = "calories-tracker-v2";
 const FILES_TO_CACHE = [
   "/calories-tracker/",
   "/calories-tracker/index.html",
-  "/calories-tracker/style.css",
+  "/calories-tracker/css/style.css",
   "/calories-tracker/app.js",
   "/calories-tracker/manifest.json"
 ];
