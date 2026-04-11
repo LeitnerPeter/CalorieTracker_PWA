@@ -1,5 +1,5 @@
-import { searchFood } from "services/foodService.js";
-import { openPortionSelector } from "modules/meals/portions.js";
+import { searchFood } from "/services/foodService.js";
+import { openPortionSelector } from "/modules/meals/portions.js";
 
 export function openFoodSearch() {
   document.body.innerHTML = `

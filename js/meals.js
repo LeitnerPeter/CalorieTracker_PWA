@@ -1,5 +1,5 @@
-import { supabaseClient } from "./supabase.js";
-import { calculateCalories, getTodayDate } from "js/calories.js";
+import { supabaseClient } from "/js/supabase.js";
+import { calculateCalories, getTodayDate } from "/js/calories.js";
 
 export async function addMeal(food, grams) {
   const calories = calculateCalories(food.calories, grams);

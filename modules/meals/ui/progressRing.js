@@ -1,4 +1,4 @@
-import { getTodayEntries } from "services/entryService.js";
+import { getTodayEntries } from "/services/entryService.js";
 
 export function drawProgressRing(percent) {
   const canvas = document.getElementById("progressRing");

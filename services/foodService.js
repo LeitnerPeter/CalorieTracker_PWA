@@ -1,4 +1,4 @@
-import { supabase } from "js/supabase.js";
+import { supabase } from "/js/supabase.js";
 
 export async function searchFood(query) {
   if (!query) return [];
