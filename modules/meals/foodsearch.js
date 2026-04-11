@@ -12,6 +12,7 @@ export function openFoodSearch() {
   document.getElementById("foodInput").addEventListener("input", async (e) => {
     const foods = await searchFood(e.target.value);
     renderResults(foods);
+    console.log('Test');
   });
 }
 
