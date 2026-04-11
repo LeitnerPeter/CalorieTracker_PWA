@@ -1,6 +1,6 @@
 import { getTodayCalories } from "/services/calorieService.js";
 import { DAILY_GOAL } from "/services/userService.js";
-import { openAddMealScreen } from "/addMealScreen.js";
+import { openAddMealScreen } from "screens/addMealScreen.js";
 import { drawProgressRing } from "/modules/ui/progressRing.js";
 
 export async function renderDashboard() {
