@@ -1,9 +1,8 @@
-import { getLastWeekDate } from "./calories.js";
-import { getWeeklyMeals } from "./meals.js";
-import { renderChart } from "./chart.js";
-import { getCache, setCache } from "./cache.js";
-import { startScanner } from "./scanner.js";
-import { addMeal } from "./meals.js";
+import { renderDashboard } from "/screens/dashboard.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderDashboard();
+});
 
 
 window.startFoodScanner = () => {
