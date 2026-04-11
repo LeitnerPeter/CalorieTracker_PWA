@@ -5,7 +5,22 @@ const FILES_TO_CACHE = [
   "/calories-tracker/index.html",
   "/calories-tracker/css/style.css",
   "/calories-tracker/app.js",
-  "/calories-tracker/manifest.json"
+  "/calories-tracker/manifest.json",
+
+  "/js/chart.js",
+  "/js/supabase.js",
+
+  "/modules/scanner/scanner.js",
+  "/modules/cache/cache.js",
+  "/modules/ui/progressRing.js",
+
+  "/screens/dashboard.js",
+  "/screens/addMealScreen.js",
+
+  "/services/entryService.js",
+  "/services/calorieService.js",
+  "/services/userService.js",
+  "/services/foodService.js"
 ];
 
 self.addEventListener("install", event => {
