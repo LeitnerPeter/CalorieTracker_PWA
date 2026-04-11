@@ -1,5 +1,5 @@
 
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "js/supabase.js";
 
 export async function getTodayEntries() {
   const today = new Date().toISOString().split("T")[0];

@@ -1,4 +1,4 @@
-import { addEntry } from "../../services/entryService.js";
+import { addEntry } from "services/entryService.js";
 
 export function openPortionSelector(food) {
   document.body.innerHTML = `

@@ -1,7 +1,7 @@
-import { openFoodSearch } from "../modules/meals/foodSearch.js";
-import { openFavorites } from "../modules/meals/favorites.js";
-import { openRecipes } from "../modules/meals/recipes.js";
-import { startScanner } from "../modules/scanner/barcodeScanner.js";
+import { openFoodSearch } from "modules/meals/foodSearch.js";
+import { openFavorites } from "modules/meals/favorites.js";
+import { openRecipes } from "modules/meals/recipes.js";
+import { startScanner } from "modules/scanner/barcodeScanner.js";
 
 export function openAddMealScreen() {
   document.body.innerHTML = `
