@@ -2,6 +2,7 @@ import { openFoodSearch } from "/modules/meals/foodSearch.js";
 import { openFavorites } from "/modules/meals/favourites.js";
 import { openRecipes } from "/modules/meals/recipes.js";
 import { startScanner } from "/modules/scanner/barcodeScanner.js";
+import { navigateTo } from "/modules/core/navigation.js";
 
 export function openAddMealScreen() {
   document.body.innerHTML = `
@@ -14,7 +15,6 @@ export function openAddMealScreen() {
       <button id="scanBtn">📷 Barcode</button>
     </div>
   `;
-
   document.getElementById("favBtn").onclick = openFavorites;
   document.getElementById("recipesBtn").onclick = openRecipes;
   document.getElementById("searchBtn").onclick = openFoodSearch;

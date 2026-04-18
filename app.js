@@ -1,5 +1,6 @@
 import { renderDashboard } from "/screens/dashboard.js";
 import { getCache, setCache } from "/modules/core/cache.js";
+import { openAddMealScreen } from "/screens/addMealScreen.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   renderDashboard();
@@ -16,6 +17,11 @@ window.startFoodScanner = () => {
     location.reload();
   });
 };
+
+// App Start ⭐
+window.addEventListener("load", () => {
+  openAddMealScreen();
+});
 
 async function loadWeeklyChart() {
 
