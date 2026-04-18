@@ -1,4 +1,5 @@
 import { renderDashboard } from "/screens/dashboard.js";
+import { getCache, setCache } from "/modules/core/cache.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   renderDashboard();
