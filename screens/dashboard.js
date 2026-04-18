@@ -31,3 +31,24 @@ export async function renderDashboard() {
   drawProgressRing(percent);
   document.getElementById("addMealBtn").onclick = openAddMealScreen;
 }
+
+function renderMealList(entries) {
+  const container = document.getElementById("mealList");
+  if (!container) return;
+
+  container.innerHTML = "<h3>Heute gegessen</h3>";
+
+  if (entries.length === 0) {
+    container.innerHTML += "<p>Noch nichts eingetragen</p>";
+    return;
+  }
+
+  entries.forEach(entry => {
+    const div = document.createElement("div");
+    div.className = "meal-entry";
+    div.innerHTML = `
+      ${entry.food_name} • ${entry.grams}g • ${entry.kcal} kcal
+    `;
+    container.appendChild(div);
+  });
+}
