@@ -2,8 +2,9 @@ import { renderDashboard } from "/screens/dashboard.js";
 import { getCache, setCache } from "/modules/core/cache.js";
 import { openAddMealScreen } from "/screens/addMealScreen.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   renderDashboard();
+  loadWeeklyChart();
 });
 
 
@@ -18,10 +19,9 @@ window.startFoodScanner = () => {
   });
 };
 
-// App Start ⭐
-window.addEventListener("load", () => {
-  openAddMealScreen();
-});
+document
+  .getElementById("add-meal-btn")
+  .addEventListener("click", openAddMealScreen);
 
 async function loadWeeklyChart() {
 
@@ -34,5 +34,3 @@ async function loadWeeklyChart() {
 
   renderChart(data);
 }
-
-loadWeeklyChart();
