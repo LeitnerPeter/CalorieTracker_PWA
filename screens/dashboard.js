@@ -29,7 +29,7 @@ export async function renderDashboard() {
   `;
 
   drawProgressRing(percent);
-  document.getElementById("addMealBtn").onclick = openAddMealScreen;
+  document.getElementById("addMealBtn")?.addEventListener("click", openAddMealScreen);
 }
 
 function renderMealList(entries) {
