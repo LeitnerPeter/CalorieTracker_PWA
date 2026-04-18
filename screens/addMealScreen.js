@@ -7,6 +7,7 @@ import { navigateTo } from "/modules/core/navigation.js";
 export function openAddMealScreen() {
   document.body.innerHTML = `
     <div class="add-meal-screen">
+      <button id="backBtn">← Zurück</button>
       <h2>Mahlzeit hinzufügen</h2>
 
       <button id="favBtn">⭐ Favoriten</button>
@@ -15,8 +16,9 @@ export function openAddMealScreen() {
       <button id="scanBtn">📷 Barcode</button>
     </div>
   `;
-  document.getElementById("favBtn").onclick = openFavorites;
-  document.getElementById("recipesBtn").onclick = openRecipes;
-  document.getElementById("searchBtn").onclick = openFoodSearch;
-  document.getElementById("scanBtn").onclick = startScanner;
+  document.getElementById("favBtn").navigateTo(openFavorites);
+  document.getElementById("recipesBtn").navigateTo(openRecipes);
+  document.getElementById("searchBtn").navigateTo(openFoodSearch);
+  document.getElementById("scanBtn").navigateTo(startScanner);
+  document.getElementById("backBtn").onclick = () => history.back();
 }
